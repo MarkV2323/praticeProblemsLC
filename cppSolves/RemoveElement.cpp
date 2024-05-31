@@ -21,51 +21,56 @@ using namespace std;
 class Solution {
 public:
 int removeElement(vector<int>& nums, int val) {
-    // I am going to use a two-pointers approach to solve this problem.
-    //
-    // Pointer 1: Will move along to find the first "val" element.
-    //            Once found, the index of this element will be stored in Pointer 1.
-    //
-    // Pointer 2: Only moves along after Pointer 1 is found. Will move along until
-    //            the first non "val" element is found. Once found, the index of this
-    //            element will be stored in Pointer 2. 
-    //
-    //            After finding both P1 and P2, we will do a swap operation on them
-    //            and reset both pointers back to nothing.
-    //
-    //            This will essentially move all "val" elements to the back of the
-    //            nums vector
+    // Simple cases that can be solved quickly
     if (nums.size() == 1) {
         if (nums[0] == val) {
-            nums.empty();
+            auto b = nums.empty();
             return 0;
         }
         return 1;
     }
 
-    int p1 = -1;
     int kFound = 0;
-    for (int i = 0; i < nums.size(); i++) {
-        if (nums[i] == val && p1 == -1) {
-            p1 = i;
-        }
-        if (nums[i] != val && p1 != -1) {
-            cout << "Swapping " << nums[p1] << " with " << nums[i] << endl;
-            int tmp = nums[p1];
-            nums[p1] = nums[i];
-            nums[i] = tmp;
+    bool trySwap = false;
+
+    for(int i = 0; i < nums.size(); i++) {
+        // Two cases:
+        // 1 - We do NOT find val -> continue
+        // 2 - We do find val -> go search for a non val
+        // kFound is incremented on the first case, and on swaps
+        // because we will not encouter non-val after swap again
+        if (nums[i] != val) {
             kFound++;
-            i = p1;
-            p1 = -1;
+            continue;
+        }
+        
+        trySwap = true;
+
+        for(int j = i + 1; j < nums.size(); j++) {
+            // Two cases:
+            // 1 - We find another val -> continue
+            // 2 - We find non-val -> swap non-val & val in place
+            if (nums[j] == val) {
+                continue;
+            }
+            // Commented out to lower Runtime ms on Leetcode
+            //cout << "Swapping " << nums[i] << " with " << nums[j] << endl;
+            auto tmp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = tmp;
+            kFound++;
+            trySwap = false;
+            break;
+        }
+
+        // If trySwap is true, we never made a swap. Set these values to 0 JIC.
+        if (trySwap) {
+            nums[i] = 0;
         }
     }
 
-    if (p1 != -1) {
-        nums.empty();
-        return 0;
-    }
-
-    return nums.size() - kFound;
+    // Return number of non-val numbers left in nums
+    return kFound;
 }
 
 };
@@ -91,5 +96,14 @@ int main() {
         cout << to_string(e) << endl;
     }
 
+    // Input: nums = [3, 3], val = 3
+    vector<int> test3 {3, 3};
+    v = 3;
+    k = sol.removeElement(test3, v);
+
+    cout << "Returned Value: " << k << endl;
+    for (auto& e : test3) {
+        cout << to_string(e) << endl;
+    }
 
 }
