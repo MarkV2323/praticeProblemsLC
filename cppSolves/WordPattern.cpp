@@ -15,7 +15,7 @@ class Solution {
 public:
     bool wordPattern(string pattern, string s) {
         // Vars used
-        unordered_map<char, string> uMap {};
+        unordered_map<string, char> uMap {};
         string tmpWord = "";
         int mapVal = 0;
 
@@ -26,30 +26,26 @@ public:
                     continue;
                 }
             }
-            cout << tmpWord << endl;
-            // 1 - Check if key already belongs in hashMap
-            // 1a - F -> Add mapping, increment mapVal
-            // 2b - T -> Get tmpWord key, compare against pattern[MapVal]
-            //           T -> continue
-            //           F -> return false
 
-            // key -> pattern[mapVal]
-            // val -> tmpWord 
-            if (!uMap.contains(pattern[mapVal])) {
-                uMap[pattern[mapVal]] = tmpWord;
-            } else {
-                cout << uMap[pattern[mapVal]] << " vs " << tmpWord << endl;
-                if (uMap[pattern[mapVal]] == tmpWord) {
-                    mapVal++;
-                    continue;
-                } else {
-                    return false;
+            if (!uMap.contains(tmpWord)) {
+                for (auto& pair : uMap) {
+                    if (pair.second == pattern[mapVal]) {
+                        return false;
+                    }
                 }
-            }
+                uMap[tmpWord] = pattern[mapVal];
+            } else if (uMap[tmpWord] != pattern[mapVal]) {
+                return false;
+            } 
+
             mapVal++;
             tmpWord = "";
         }
-        cout << endl;
+
+        if (mapVal != pattern.size()) {
+            return false;
+        }
+
         return true;
     }
 };
@@ -58,6 +54,9 @@ int main() {
     Solution s {};
     auto r = s.wordPattern("abba", "cat dog dog cat");
     cout << "Value Returned: " << boolalpha << r << endl;
+
+    r = s.wordPattern("jquery", "jquery");
+    cout << "(J) Value Returned: " << boolalpha << r << endl;
 
     r = s.wordPattern("a", "cat");
     cout << "Value Returned: " << boolalpha << r << endl;
